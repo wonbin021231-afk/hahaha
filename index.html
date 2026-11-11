@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2인용 테트리스 배틀 (Tetris Battle 2P)</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Pretendard:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Background Glow & Particles -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- Header & Top Controls -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-badge">2-PLAYER BATTLE</span>
+      <h1 class="brand-title">TETRIS <span>BATTLE</span></h1>
+    </div>
+
+    <!-- Battle Center Stats & Controls -->
+    <div class="header-controls">
+      <button id="btn-pause" class="btn btn-control" title="게임 일시정지 (P)">
+        <span class="btn-icon">⏸️</span>
+        <span class="btn-text">일시정지</span>
+      </button>
+      <button id="btn-restart" class="btn btn-control btn-restart" title="게임 다시 시작">
+        <span class="btn-icon">🔄</span>
+        <span class="btn-text">다시 시작</span>
+      </button>
+      <button id="btn-sound" class="btn btn-control btn-icon-only" title="효과음 켜기/끄기">
+        <span id="sound-icon">🔊</span>
+      </button>
+      <button id="btn-rules" class="btn btn-control btn-icon-only" title="규칙 및 공격 가이드">
+        <span>❓</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Attack Notification Bar -->
+  <div id="attack-banner-container" class="attack-banner-container">
+    <div id="attack-banner" class="attack-banner">
+      <span id="attack-banner-icon">⚔️</span>
+      <span id="attack-banner-text">공격 준비 완료!</span>
+    </div>
+  </div>
+
+  <!-- Main Game Arena -->
+  <main class="game-arena">
+    <!-- ================= PLAYER 1 ================= -->
+    <section class="player-container player-1" id="p1-container">
+      <div class="player-header">
+        <div class="player-identity">
+          <div class="player-tag">1P</div>
+          <h2 class="player-name">PLAYER 1</h2>
+        </div>
+        <div class="player-status-badge" id="p1-status">PLAYING</div>
+      </div>
+
+      <div class="game-board-wrapper">
+        <div class="canvas-glow" id="p1-canvas-glow"></div>
+        <canvas id="p1-canvas" width="300" height="600" class="game-canvas"></canvas>
+        <div class="board-overlay" id="p1-overlay"></div>
+      </div>
+
+      <!-- Player 1 Side Stats & Next -->
+      <aside class="player-sidebar">
+        <div class="info-card next-card">
+          <div class="card-label">NEXT</div>
+          <canvas id="p1-next-canvas" width="100" height="100" class="next-canvas"></canvas>
+        </div>
+
+        <div class="info-card">
+          <div class="card-label">SCORE</div>
+          <div class="card-value score-value" id="p1-score">0</div>
+        </div>
+
+        <div class="info-card">
+          <div class="card-label">LINES</div>
+          <div class="card-value" id="p1-lines">0</div>
+        </div>
+
+        <div class="info-card attack-card">
+          <div class="card-label">ATTACKS SENT</div>
+          <div class="card-value attack-value" id="p1-attacks">0</div>
+        </div>
+      </aside>
+
+      <!-- Player 1 Key Controls Guide -->
+      <div class="controls-guide">
+        <div class="guide-title">1P 조작법 (WASD)</div>
+        <div class="key-grid">
+          <div class="key-item">
+            <kbd>W</kbd>
+            <span>회전</span>
+          </div>
+          <div class="key-item">
+            <kbd>A</kbd> <kbd>D</kbd>
+            <span>좌 / 우 이동</span>
+          </div>
+          <div class="key-item">
+            <kbd>S</kbd>
+            <span>소프트 드롭</span>
+          </div>
+          <div class="key-item highlight-key">
+            <kbd>Left Shift</kbd>
+            <span>하드 드롭</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Center Versus Divider / Attack Laser Track -->
+    <div class="vs-divider">
+      <div class="vs-line"></div>
+      <div class="vs-badge">VS</div>
+      <div id="attack-beam" class="attack-beam"></div>
+      <div class="vs-line"></div>
+    </div>
+
+    <!-- ================= PLAYER 2 ================= -->
+    <section class="player-container player-2" id="p2-container">
+      <div class="player-header">
+        <div class="player-identity">
+          <div class="player-tag">2P</div>
+          <h2 class="player-name">PLAYER 2</h2>
+        </div>
+        <div class="player-status-badge" id="p2-status">PLAYING</div>
+      </div>
+
+      <div class="game-board-wrapper">
+        <div class="canvas-glow" id="p2-canvas-glow"></div>
+        <canvas id="p2-canvas" width="300" height="600" class="game-canvas"></canvas>
+        <div class="board-overlay" id="p2-overlay"></div>
+      </div>
+
+      <!-- Player 2 Side Stats & Next -->
+      <aside class="player-sidebar">
+        <div class="info-card next-card">
+          <div class="card-label">NEXT</div>
+          <canvas id="p2-next-canvas" width="100" height="100" class="next-canvas"></canvas>
+        </div>
+
+        <div class="info-card">
+          <div class="card-label">SCORE</div>
+          <div class="card-value score-value" id="p2-score">0</div>
+        </div>
+
+        <div class="info-card">
+          <div class="card-label">LINES</div>
+          <div class="card-value" id="p2-lines">0</div>
+        </div>
+
+        <div class="info-card attack-card">
+          <div class="card-label">ATTACKS SENT</div>
+          <div class="card-value attack-value" id="p2-attacks">0</div>
+        </div>
+      </aside>
+
+      <!-- Player 2 Key Controls Guide -->
+      <div class="controls-guide">
+        <div class="guide-title">2P 조작법 (방향키)</div>
+        <div class="key-grid">
+          <div class="key-item">
+            <kbd>▲</kbd>
+            <span>회전</span>
+          </div>
+          <div class="key-item">
+            <kbd>◀</kbd> <kbd>▶</kbd>
+            <span>좌 / 우 이동</span>
+          </div>
+          <div class="key-item">
+            <kbd>▼</kbd>
+            <span>소프트 드롭</span>
+          </div>
+          <div class="key-item highlight-key">
+            <kbd>Space</kbd>
+            <span>하드 드롭</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Special Attack Rule Notice Callout -->
+  <div class="rule-callout">
+    <span class="callout-icon">⚡</span>
+    <span class="callout-text">
+      <strong>공격 규칙:</strong> 2줄 이상 동시에 채우면 상대방 바닥에 방해 블록이 추가됩니다. (완성된 줄에서 <em>마지막에 채워진 블록 위치</em>는 제거되어 빈 공간(구멍)으로 추가됩니다!)
+    </span>
+  </div>
+
+  <!-- Pause Modal Overlay -->
+  <div id="pause-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-icon">⏸️</div>
+      <h2 class="modal-title">게임 일시정지</h2>
+      <p class="modal-desc">게임이 멈춰있습니다. 계속 진행하려면 계속하기를 누르세요.</p>
+      <div class="modal-actions">
+        <button id="btn-resume" class="btn btn-primary">계속하기 (Resume)</button>
+        <button id="btn-modal-restart" class="btn btn-secondary">다시 시작 (Restart)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Over Modal Overlay -->
+  <div id="gameover-modal" class="modal-overlay hidden">
+    <div class="modal-card gameover-card">
+      <div class="trophy-icon" id="winner-trophy">🏆</div>
+      <h2 class="modal-title" id="winner-title">PLAYER 1 승리!</h2>
+      <p class="modal-desc" id="winner-desc">상대방의 블록이 상단에 도달했습니다.</p>
+
+      <div class="gameover-stats-grid">
+        <div class="stat-box p1-stat-box">
+          <div class="stat-player">1P SCORE</div>
+          <div class="stat-number" id="final-p1-score">0</div>
+          <div class="stat-sub" id="final-p1-lines">0줄 완성</div>
+        </div>
+        <div class="stat-box p2-stat-box">
+          <div class="stat-player">2P SCORE</div>
+          <div class="stat-number" id="final-p2-score">0</div>
+          <div class="stat-sub" id="final-p2-lines">0줄 완성</div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btn-play-again" class="btn btn-primary btn-pulse">새 게임 시작</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rules / Info Modal -->
+  <div id="rules-modal" class="modal-overlay hidden">
+    <div class="modal-card rules-card">
+      <h2 class="modal-title">📖 게임 규칙 및 안내</h2>
+      <div class="rules-content">
+        <h3>1. 승리 조건</h3>
+        <p>어느 한 플레이어의 블록이 화면 최상단(Top)에 닿거나 더 이상 생성될 수 없으면 즉시 게임이 종료되며, 살아남은 플레이어가 승리합니다.</p>
+
+        <h3>2. 2줄 이상 공격 (Garbage Attack) 규칙</h3>
+        <p>• <strong>발동 조건:</strong> 블록을 놓아 <strong>2줄 이상(2줄, 3줄, 4줄)</strong>을 동시에 채워 제거해야 합니다. (1줄 제거는 공격 발동 안 됨)</p>
+        <p>• <strong>공격 방식:</strong> 채워진 줄 수만큼 상대방 화면의 하단에 방해 블록(가비지 라인)이 솟아오릅니다.</p>
+        <p>• <strong>마지막 채워진 부분 제거:</strong> 완성된 각 줄에서 <em>방금 떨어진 블록이 채웠던 위치</em>는 제거되어 <strong>빈 구멍(Hole)</strong>으로 남겨진 상태로 상대방 하단에 추가됩니다. 상대방은 이 구멍을 공략하여 라인을 다시 지울 수 있습니다!</p>
+
+        <h3>3. 키 조작</h3>
+        <div class="rules-keys-table">
+          <div><strong>1P:</strong> W (회전), A/D (좌우), S (소프트드롭), Left Shift (하드드롭)</div>
+          <div><strong>2P:</strong> ▲ (회전), ◀/▶ (좌우), ▼ (소프트드롭), Space (하드드롭)</div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="btn-close-rules" class="btn btn-primary">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
